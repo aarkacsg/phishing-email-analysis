@@ -1,0 +1,14 @@
+let DeliveredUsers =
+    CloudoraMsgTrace_CL
+    | where EventType == "Delivery"
+    | where DeliveryAction == "Delivered"
+    | distinct RecipientAddress;
+
+let ClickedUsers =
+    CloudoraMsgTrace_CL
+    | where EventType == "Click"
+    | distinct RecipientAddress;
+
+DeliveredUsers
+| where RecipientAddress !in (ClickedUsers)
+| order by RecipientAddress asc
