@@ -1,0 +1,23 @@
+let PhishingClicks =
+    CloudoraMsgTrace_CL
+    | where EventType == "Click"
+    | project
+        UserPrincipalName = RecipientAddress,
+        ClickTime = TimeGenerated;
+
+CloudoraSignIn_CL
+| where ResultType == "0"
+| join kind=inner PhishingClicks on UserPrincipalName
+| where TimeGenerated > ClickTime
+| where TimeGenerated <= ClickTime + 4h
+| project
+    TimeGenerated,
+    UserPrincipalName,
+    ClickTime,
+    IPAddress,
+    City,
+    Country,
+    DeviceOS,
+    Browser,
+    AppDisplayName
+| order by TimeGenerated asc
