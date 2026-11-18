@@ -1,0 +1,19 @@
+let CredVictims =
+    CloudoraMsgTrace_CL
+    | where EventType == "Click"
+    | where CredentialsSubmitted == "Yes"
+    | distinct RecipientAddress;
+
+CloudoraSignIn_CL
+| where UserPrincipalName in (CredVictims)
+| where ResultType == "0"
+| project
+    TimeGenerated,
+    UserPrincipalName,
+    AppDisplayName,
+    IPAddress,
+    City,
+    Country,
+    DeviceOS,
+    Browser
+| order by UserPrincipalName asc, TimeGenerated asc
